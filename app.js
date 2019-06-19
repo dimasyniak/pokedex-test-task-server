@@ -8,10 +8,10 @@ var cors = require('cors');
 
 app.use(cors())
 
-/*getData = () => {
+getData = () => {
     return new Promise((resolve, reject) => {
         let allData = new Array;
-        axios.get("https://pokeapi.co/api/v2/pokemon/?&limit=180").then(response => {
+        axios.get("https://pokeapi.co/api/v2/pokemon/?&limit=20").then(response => {
             data = response.data.results;
             response.data.results.map(pokemon => {
                 axios.get("https://pokeapi.co/api/v2/pokemon/" + pokemon.name).then(pokemonData => {
@@ -41,14 +41,14 @@ app.use(cors())
     })
 
 }
-*/
 
 
-getData = () => {
+
+getData = (count) => {
     return new Promise((resolve, reject) => {
         let allData = new Array;
         var interval = {
-            limit: 800,
+            limit: count,
             offset: 10
         }
         P.getPokemonsList(interval)
@@ -68,7 +68,13 @@ getData = () => {
 
 app.get('/', async function (req, res) {
 
-    getData().then(result => {
+res.send("dsfasd");
+
+});
+
+app.use('/poke', async function (req, res) {
+
+    getData(85).then(result => {
         P.resource(result)
     .then(function (response) {
         res.send(response); // resource function accepts singles or arrays of URLs/paths
@@ -80,7 +86,6 @@ app.get('/', async function (req, res) {
 });
 
 
-
-/*app.listen(3000, function () {
+app.listen(3000, function () {
     console.log('Приклад застосунку, який прослуховує 3000-ий порт!');
-});*/
+});
