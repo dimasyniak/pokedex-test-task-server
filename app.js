@@ -3,12 +3,14 @@ const axios = require('axios');
 const app = express();
 var Pokedex = require('pokedex-promise-v2');
 var P = new Pokedex();
-
+var bodyParser = require('body-parser');
 var cors = require('cors');
 
 app.use(cors())
+app.use(bodyParser.urlencoded({extended: false}));
+app.use(bodyParser.json());
 
-getData = () => {
+/*getData = () => {
     return new Promise((resolve, reject) => {
         let allData = new Array;
         axios.get("https://pokeapi.co/api/v2/pokemon/?&limit=20").then(response => {
@@ -40,7 +42,7 @@ getData = () => {
         })
     })
 
-}
+}*/
 
 
 
@@ -49,7 +51,7 @@ getData = (count) => {
         let allData = new Array;
         var interval = {
             limit: count,
-            offset: 10
+            offset: 0
         }
         P.getPokemonsList(interval)
             .then(function (response) {
@@ -66,22 +68,45 @@ getData = (count) => {
 
 
 
-app.get('/', async function (req, res) {
+app.get('/',  function (req, res) {
 
 res.send("dsfasd");
 
 });
 
-app.use('/poke', async function (req, res) {
+app.post('/poke',  function (req, res) {
 
-    getData(85).then(result => {
+    /*getData(50).then(result => {
         P.resource(result)
     .then(function (response) {
         res.send(response); // resource function accepts singles or arrays of URLs/paths
     });
-    })
+    })*/
+    res.send(req.body.name);
 
 //res.send(result);
+
+});
+
+app.post('/test',  function (req, res) {
+
+   //var id = req.body.id;
+   //res.send(JSON.stringify('send: '+ id*2))
+    //console.log(Number(req.body.id));
+    getData(Number(req.body.id)).then(result => {
+        P.resource(result)
+    .then(function (response) {
+        res.status(200).send(response); // resource function accepts singles or arrays of URLs/paths
+    });
+    })
+
+   
+  /* getData(JSON.stringify(id)).then(result => {
+        P.resource(result)
+    .then(function (response) {
+        res.send(response); // resource function accepts singles or arrays of URLs/paths
+    });
+    })*/
 
 });
 
