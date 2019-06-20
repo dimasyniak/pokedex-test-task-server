@@ -50,8 +50,8 @@ getData = (count) => {
     return new Promise((resolve, reject) => {
         let allData = new Array;
         var interval = {
-            limit: count,
-            offset: 0
+            limit: 20,
+            offset: count
         }
         P.getPokemonsList(interval)
             .then(function (response) {
@@ -93,7 +93,9 @@ app.post('/test',  function (req, res) {
    //var id = req.body.id;
    //res.send(JSON.stringify('send: '+ id*2))
     //console.log(Number(req.body.id));
-    getData(Number(req.body.id)).then(result => {
+    //res.send(req.body.id);
+   
+   getData(Number(req.body.id)).then(result => {
         P.resource(result)
     .then(function (response) {
         res.status(200).send(response); // resource function accepts singles or arrays of URLs/paths
