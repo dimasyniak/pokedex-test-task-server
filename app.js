@@ -7,51 +7,17 @@ var bodyParser = require('body-parser');
 var cors = require('cors');
 
 app.use(cors())
-app.use(bodyParser.urlencoded({extended: false}));
+app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
-/*getData = () => {
-    return new Promise((resolve, reject) => {
-        let allData = new Array;
-        axios.get("https://pokeapi.co/api/v2/pokemon/?&limit=20").then(response => {
-            data = response.data.results;
-            response.data.results.map(pokemon => {
-                axios.get("https://pokeapi.co/api/v2/pokemon/" + pokemon.name).then(pokemonData => {
-                    let about = pokemonData.data;
-                    let pokemonObj;
-                    pokemonObj = {
-                        key: about.name,
-                        name: about.name.toUpperCase(),
-                        speed: about.stats[0].base_stat,
-                        number: about.id,
-                        spDefense: about.stats[1].base_stat,
-                        spAttack: about.stats[2].base_stat,
-                        defense: about.stats[3].base_stat,
-                        attack: about.stats[4].base_stat,
-                        hp: about.stats[5].base_stat
-                    }
-                    allData.push(pokemonObj);
-
-                    if (allData.length === data.length) {
-                        resolve(allData);
-                    }
-                })
-            })
-            
-
-        })
-    })
-
-}*/
 
 
-
-getData = (count) => {
+getData = (offset, limit = 10) => {
     return new Promise((resolve, reject) => {
         let allData = new Array;
         var interval = {
-            limit: 20,
-            offset: count
+            limit: limit,
+            offset: offset
         }
         P.getPokemonsList(interval)
             .then(function (response) {
@@ -68,49 +34,59 @@ getData = (count) => {
 
 
 
-app.get('/',  function (req, res) {
+app.get('/', function (req, res) {
 
-res.send("dsfasd");
-
-});
-
-app.post('/poke',  function (req, res) {
-
-    /*getData(50).then(result => {
-        P.resource(result)
-    .then(function (response) {
-        res.send(response); // resource function accepts singles or arrays of URLs/paths
-    });
-    })*/
-    res.send(req.body.name);
-
-//res.send(result);
+    res.send("dsfasd");
 
 });
 
-app.post('/test',  function (req, res) {
 
-   //var id = req.body.id;
-   //res.send(JSON.stringify('send: '+ id*2))
-    //console.log(Number(req.body.id));
-    //res.send(req.body.id);
-   
-   getData(Number(req.body.id)).then(result => {
+
+app.post('/all', function (req, res) {
+
+    getData(Number(req.body.offset), Number(req.body.limit)).then(result => {
         P.resource(result)
-    .then(function (response) {
-        res.status(200).send(response); // resource function accepts singles or arrays of URLs/paths
-    });
+            .then(function (response) {
+                res.status(200).send(response); // resource function accepts singles or arrays of URLs/paths
+            });
     })
 
-   
-  /* getData(JSON.stringify(id)).then(result => {
-        P.resource(result)
-    .then(function (response) {
-        res.send(response); // resource function accepts singles or arrays of URLs/paths
-    });
-    })*/
-
 });
+
+app.post('/types', function (req, res) {
+    // res.status(200).send(req.body);
+    let allTypes = new Array;
+    let limit = Number(req.body.limit);
+    let offset = Number(req.body.offset);
+
+    let data = {
+        pokemons: null,
+        count: null
+    }
+    req.body.types.map(item => {
+        allTypes.push('/api/v2/type/' + item);
+    })
+    P.resource(allTypes)
+    .then(function(response) {
+        let allData = new Array;
+        response.map(item => {
+            item.pokemon.map(pokeItem => {
+                allData.push('/api/v2/pokemon/' + pokeItem.pokemon.name);
+            })
+        })
+        P.resource(Array.from(new Set(allData.slice(offset, limit+offset))))
+        .then(function(response) {
+            data = {
+                pokemons: Array.from(new Set(allData.slice(offset, limit+offset))),
+                count: Array.from(new Set(allData)).length
+            }
+            res.status(200).send(data); // resource function accepts singles or arrays of URLs/paths
+        });
+        // res.status(200).send(Array.from(new Set(allData.slice(20, 40)))); // resource function accepts singles or arrays of URLs/paths
+    });
+});
+
+
 
 
 app.listen(3000, function () {
