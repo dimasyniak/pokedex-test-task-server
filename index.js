@@ -4,6 +4,7 @@ var Pokedex = require('pokedex-promise-v2');
 var P = new Pokedex();
 var bodyParser = require('body-parser');
 var cors = require('cors');
+const PORT = process.env.PORT || 3000;
 
 app.use(cors())
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -87,6 +88,4 @@ app.post('/name', function (req, res) {
 });
 
 
-app.listen(3000, function () {
-    console.log('3000-ий порт!');
-});
+app.listen(PORT, () => console.log(`Listening on ${ PORT }`));
