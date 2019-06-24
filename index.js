@@ -90,6 +90,3 @@ app.post('/name', function (req, res) {
 app.listen(3000, function () {
     console.log('3000-ий порт!');
 });
-app.on('listening', function() {
-    console.log('Express server started on port %s at %s', server.address().port, server.address().address);
-});
