@@ -33,28 +33,18 @@ getData = (offset, limit = 10) => {
 }
 
 
-
-app.get('/', function (req, res) {
-
-    res.send("dsfasd");
-
-});
-
-
-
 app.post('/all', function (req, res) {
 
     getData(Number(req.body.offset), Number(req.body.limit)).then(result => {
         P.resource(result)
             .then(function (response) {
-                res.status(200).send(response); // resource function accepts singles or arrays of URLs/paths
+                res.status(200).send(response);
             });
     })
 
 });
 
 app.post('/types', function (req, res) {
-    // res.status(200).send(req.body);
     let allTypes = new Array;
     let limit = Number(req.body.limit);
     let offset = Number(req.body.offset);
@@ -74,19 +64,30 @@ app.post('/types', function (req, res) {
                 allData.push('/api/v2/pokemon/' + pokeItem.pokemon.name);
             })
         })
-        P.resource(Array.from(new Set(allData.slice(offset, limit+offset))))
+        P.resource(Array.from(new Set(allData.slice(Number(offset), Number(offset+limit)))))
         .then(function(response) {
             data = {
-                pokemons: Array.from(new Set(allData.slice(offset, limit+offset))),
+                pokemons: response,
                 count: Array.from(new Set(allData)).length
             }
-            res.status(200).send(data); // resource function accepts singles or arrays of URLs/paths
+            res.status(200).send(data);
         });
-        // res.status(200).send(Array.from(new Set(allData.slice(20, 40)))); // resource function accepts singles or arrays of URLs/paths
     });
 });
 
-
+app.post('/name', function (req, res) {
+    P.getPokemonByName(req.body.name.toLowerCase())
+    .then(function(response) {
+        if (response.name) {
+            res.status(200).send(response);
+        } else {
+            res.status(200).send(false);
+        }
+    })
+    .catch(function(error) {
+        res.status(200).send(false);
+    });
+});
 
 
 app.listen(3000, function () {
