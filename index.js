@@ -4,9 +4,7 @@ var Pokedex = require('pokedex-promise-v2');
 var P = new Pokedex();
 var bodyParser = require('body-parser');
 var cors = require('cors');
-var http = require('http');
 
-var server = http.createServer(app);
 app.use(cors())
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
@@ -30,6 +28,10 @@ getData = (offset, limit = 10) => {
     })
 
 }
+
+app.get('/', function (req, res) {
+    res.send("Hello world!");
+ });
 
 app.post('/all', function (req, res) {
     getData(Number(req.body.offset), Number(req.body.limit)).then(result => {
@@ -85,7 +87,9 @@ app.post('/name', function (req, res) {
 });
 
 
-app.listen(3000, 'localhost');
+app.listen(3000, function () {
+    console.log('3000-ий порт!');
+});
 app.on('listening', function() {
     console.log('Express server started on port %s at %s', server.address().port, server.address().address);
 });
