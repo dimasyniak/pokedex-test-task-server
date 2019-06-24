@@ -1,5 +1,4 @@
 const express = require('express');
-const axios = require('axios');
 const app = express();
 var Pokedex = require('pokedex-promise-v2');
 var P = new Pokedex();
@@ -9,8 +8,6 @@ var cors = require('cors');
 app.use(cors())
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
-
-
 
 getData = (offset, limit = 10) => {
     return new Promise((resolve, reject) => {
@@ -32,23 +29,19 @@ getData = (offset, limit = 10) => {
 
 }
 
-
 app.post('/all', function (req, res) {
-
     getData(Number(req.body.offset), Number(req.body.limit)).then(result => {
         P.resource(result)
             .then(function (response) {
                 res.status(200).send(response);
             });
     })
-
 });
 
 app.post('/types', function (req, res) {
     let allTypes = new Array;
     let limit = Number(req.body.limit);
     let offset = Number(req.body.offset);
-
     let data = {
         pokemons: null,
         count: null
