@@ -91,5 +91,5 @@ app.post('/name', function (req, res) {
 
 
 app.listen(3000, function () {
-    console.log('Приклад застосунку, який прослуховує 3000-ий порт!');
+    console.log('3000-ий порт!');
 });
